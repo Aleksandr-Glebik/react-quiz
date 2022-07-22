@@ -27,7 +27,7 @@ class Drawer extends Component {
                 <li key={index} >
                     <NavLink
                         to={link.to}
-                        exact={link.exact}
+                        exact={`${link.exact}`}
                         style={({ isActive }) =>
                             isActive
                              ? activeStyle
