@@ -2,6 +2,9 @@ import React, {Component} from "react"
 import classes from './Quiz.module.css'
 import ActiveQuiz from "../../components/ActiveQuiz/ActiveQuiz"
 import FinishedQuiz from "../../components/FinishedQuiz/FinishedQuiz"
+import axios from '../../axios/axios-quiz'
+import Loader from "../../components/UI/Loader/Loader"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 
 class Quiz extends Component {
     state = {
@@ -9,31 +12,8 @@ class Quiz extends Component {
         isFinished: false,
         activeQuestion: 0,
         answerState: null, // { [id]: 'success' or 'err' }
-        quiz: [
-            {
-                question: 'Какого цвета небо?',
-                rightAnswerId: 2,
-                id: 1,
-                answers: [
-                    {text: 'Черный', id: 1},
-                    {text: 'Синий', id: 2},
-                    {text: 'Красный', id: 3},
-                    {text: 'Зеленый', id: 4}
-                ]
-            },
-            {
-                question: 'Какого цвета солнце?',
-                rightAnswerId: 1,
-                id: 2,
-                answers: [
-                    {text: 'Желтый', id: 1},
-                    {text: 'Синий', id: 2},
-                    {text: 'Красный', id: 3},
-                    {text: 'Зеленый', id: 4}
-                ]
-            },
-
-        ],
+        quiz: [],
+        loading: true,
     }
 
     onAnswerClickHandler = (answerId) => {
@@ -98,18 +78,35 @@ class Quiz extends Component {
         })
     }
 
+    async componentDidMount() {
+        try {
+            const response = await axios.get(`quizes/${this.props.router.params.id}.json`)
+            const quiz = response.data
+
+            this.setState({
+                quiz,
+                loading: false
+            })
+
+        } catch (error) {
+            console.log('error', error);
+        }
+    }
+
     render() {
         return (
             <div className={classes.Quiz}>
                 <h1>Ответьте на все вопросы</h1>
-                {
-                    this.state.isFinished
-                     ?  <FinishedQuiz
+
+                { this.state.loading
+                    ? <Loader />
+                    : this.state.isFinished
+                        ?  <FinishedQuiz
                             results={this.state.results}
                             quiz={this.state.quiz}
                             onRetry={this.retryHandler}
                         />
-                     : <div className={classes.QuizWrapper}>
+                        : <div className={classes.QuizWrapper}>
                             <ActiveQuiz
                                 answers={this.state.quiz[this.state.activeQuestion].answers}
                                 question={this.state.quiz[this.state.activeQuestion].question}
@@ -125,4 +122,19 @@ class Quiz extends Component {
     }
 }
 
-export default Quiz
+function withRouter(Component) {
+    function ComponentWithRouterProp(props) {
+      let location = useLocation()
+      let navigate = useNavigate()
+      let params = useParams()
+
+      return (
+        <Component {...props} router={{location, navigate, params}} />
+      )
+    }
+
+    return ComponentWithRouterProp
+  }
+
+export default withRouter(Quiz)
+// export default Quiz
