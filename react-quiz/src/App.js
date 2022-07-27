@@ -1,4 +1,4 @@
-import React, {Component} from "react"
+import React from "react"
 import Layout from "./hoc/Layout/Layout"
 import {Routes, Route} from 'react-router-dom'
 import Quiz from "./containers/Quiz/Quiz"
