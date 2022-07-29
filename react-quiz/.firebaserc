@@ -1,1 +1,8 @@
-{}
+{
+  "projects": {
+    "react-quiz": "react-quiz-29ea8",
+    "default": "react-quiz-29ea8"
+  },
+  "targets": {},
+  "etags": {}
+}
